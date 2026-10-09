@@ -1,0 +1,40 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libx11-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+      - name: Test and build
+        run: |
+          cargo test --release
+          cargo build --release
+          cargo install cargo-deb --locked
+          cargo deb --no-build
+      - name: Package
+        run: |
+          mkdir -p dist/pdf-r2l-script-linux
+          cp target/release/pdf-r2l-script-linux LICENSES.txt dist/pdf-r2l-script-linux/
+          tar -C dist -czf dist/pdf-r2l-script-linux-x86_64.tar.gz pdf-r2l-script-linux
+          cp target/debian/*.deb dist/
+          ls -l dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: |
+            dist/*.deb
+            dist/*.tar.gz
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" dist/*.deb dist/*.tar.gz --title "pdf-r2l-script-linux ${GITHUB_REF_NAME}" --notes "Linux用パッケージ(.deb / .tar.gz)。ライセンスは英日併記(LICENSES.txt) / Linux packages. Licenses in English and Japanese."

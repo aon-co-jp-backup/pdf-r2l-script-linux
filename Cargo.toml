@@ -1,0 +1,30 @@
+[package]
+name = "pdf-r2l-script-linux"
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+description = "PDFを右綴じ(R2L・見開き右)にするLinux GUIアプリ"
+
+[dependencies]
+lopdf = "0.34"
+eframe = "0.29"
+rfd = "0.15"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
+
+[package.metadata.deb]
+name = "pdf-r2l-script-linux"
+maintainer = "aon-co-jp <noreply@github.com>"
+copyright = "See /usr/share/doc/pdf-r2l-script-linux/copyright (English and Japanese)"
+extended-description = "Change the PDF binding direction (R2L). PDFの綴じ方向を変更するGUIアプリ。"
+section = "utils"
+priority = "optional"
+depends = "$auto, fonts-noto-cjk | fonts-ipafont-gothic, xdg-desktop-portal"
+assets = [
+  ["target/release/pdf-r2l-script-linux", "usr/bin/", "755"],
+  ["LICENSES.txt", "usr/share/doc/pdf-r2l-script-linux/copyright", "644"],
+  ["packaging/pdf-r2l-script-linux.desktop", "usr/share/applications/", "644"],
+]

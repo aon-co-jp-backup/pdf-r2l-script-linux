@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=PDF R2L Script
+Name[ja]=PDF R2L Script (PDF綴じ方向変更)
+Comment=Change the binding direction of PDFs
+Comment[ja]=PDFの綴じ方向を変更します
+Exec=pdf-r2l-script-linux %f
+Terminal=false
+Categories=Utility;
+MimeType=application/pdf;
